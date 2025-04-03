@@ -302,3 +302,76 @@
   .movie-list-item-title {
     font-size: 24px; 
   }
+  .navbar {
+    position: sticky;
+    top: 0;
+    z-index: 1000; 
+    width: 100%;
+    height: 50px;
+    background-color: black;
+}
+/* Toggle switch */
+.toggle {
+  width: 40px;
+  height: 20px;
+  background-color: white;
+  border-radius: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.5s ease;
+}
+
+.toggle-icon {
+  color: goldenrod;
+  font-size: 12px;
+}
+
+.toggle-ball {
+  width: 18px;
+  height: 18px;
+  background-color: black;
+  position: absolute;
+  right: 1px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.5s ease;
+}
+
+
+.toggle.active {
+  background-color: black;
+}
+
+.toggle-ball.active {
+  background-color: white;
+  transform: translateX(-20px);
+}
+
+.container.active {
+  background-color: white;
+  color: black;
+}
+
+.navbar-container.active {
+  background-color: white;
+  color: black;
+}
+
+.sidebar.active {
+  background-color: white;
+}
+
+.left-menu-icon.active {
+  color: black;
+}
+
+.movie-list-title.active {
+  color: black;
+}
+.container, .navbar-container, .sidebar {
+  transition: background-color 0.5s ease, color 0.3s ease;
+}
+  
