@@ -29,10 +29,20 @@
                 </ul>
             </div>
             <div class="profile-container">
-                <img class="profile-picture" src="AnyConv.com__c23cd18f-17b5-4077-a839-8449d2015ee4.jpg" alt="">
-                <div class="profile-text-container">
-                    <span class="profile-text">Profile</span>
-                    <i class="fas fa-caret-down"></i>
+                <div class="profile-dropdown">
+                    <div class="profile-trigger" onclick="toggleDropdown()">
+                        <img class="profile-picture" src="AnyConv.com__c23cd18f-17b5-4077-a839-8449d2015ee4.jpg"
+                            alt="Profile">
+                        <div class="profile-text-container">
+                            <span class="profile-text">Profile</span>
+                            <i class="fas fa-caret-down dropdown-icon"></i>
+                        </div>
+                    </div>
+                    <div class="dropdown-menu" id="dropdownMenu">
+                        <a href="#"><i class="fas fa-user"></i> Account</a>
+                        <a href="#"><i class="fas fa-cog"></i> Settings</a>
+                        <a href="#"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                    </div>
                 </div>
                 <div class="toggle">
                     <i class="fas fa-moon toggle-icon"></i>
@@ -275,23 +285,3 @@
 </body>
 
 </html>
-<div class="profile-container">
-    <div class="profile-dropdown">
-        <img class="profile-picture" src="AnyConv.com__c23cd18f-17b5-4077-a839-8449d2015ee4.jpg" alt="">
-        <div class="profile-text-container">
-            <span class="profile-text">Profile</span>
-            <i class="fas fa-caret-down"></i>
-        </div>
-        <!-- Đổi class từ dropdown-content thành dropdown-menu -->
-        <div class="dropdown-menu">
-            <a href="#"><i class="fas fa-user"></i> Account</a>
-            <a href="#"><i class="fas fa-cog"></i> Settings</a>
-            <a href="#"><i class="fas fa-sign-out-alt"></i> Logout</a>
-        </div>
-    </div>
-    <div class="toggle">
-        <i class="fas fa-moon toggle-icon"></i>
-        <i class="fas fa-sun toggle-icon"></i>
-        <div class="toggle-ball"></div>
-    </div>
-</div>

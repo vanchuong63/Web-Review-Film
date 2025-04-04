@@ -1,45 +1,73 @@
-// ===== TOGGLE DARK MODE =====
+// ===== TOGGLE DARK/LIGHT MODE =====
 const toggle = document.querySelector('.toggle');
 const toggleBall = document.querySelector('.toggle-ball');
-const items = document.querySelectorAll(
-  '.container,.navbar-container,.sidebar,.left-menu-icon,.movie-list-title'
+const itemsToToggle = document.querySelectorAll(
+  '.container, .navbar-container, .sidebar, .left-menu-icon, .movie-list-title, .menu-list-item, .profile-container, .dropdown-menu'
 );
 
-toggle.addEventListener('click', () => {
-  items.forEach(item => {
+function toggleTheme() {
+  // Toggle light-mode class on body
+  document.body.classList.toggle('light-mode');
+
+  // Toggle active class for legacy dark mode elements
+  itemsToToggle.forEach(item => {
     item.classList.toggle('active');
   });
+
+  // Toggle toggle ball position
+  toggleBall.classList.toggle('toggle-ball-move');
   toggleBall.classList.toggle('active');
 
-  // Lưu trạng thái Dark Mode vào localStorage
-  const isDarkMode = document.querySelector('.container').classList.contains('active');
-  localStorage.setItem('darkMode', isDarkMode);
-});
-
-// Khôi phục trạng thái Dark Mode khi tải trang
-if (localStorage.getItem('darkMode') === 'true') {
-  items.forEach(item => {
-    item.classList.add('active');
-  });
-  toggleBall.classList.add('active');
+  // Save theme preference to localStorage
+  const isLightMode = document.body.classList.contains('light-mode');
+  localStorage.setItem('theme', isLightMode ? 'light' : 'dark');
+  localStorage.setItem('darkMode', !isLightMode); // Legacy support
 }
 
+// Initialize theme on page load
+function initializeTheme() {
+  const savedTheme = localStorage.getItem('theme');
+  const legacyDarkMode = localStorage.getItem('darkMode') === 'true';
+
+  if (savedTheme === 'light' || (savedTheme === null && legacyDarkMode === false)) {
+    document.body.classList.add('light-mode');
+    toggleBall.classList.add('toggle-ball-move');
+    itemsToToggle.forEach(item => {
+      item.classList.remove('active'); // Ensure active class is removed for light mode
+    });
+  } else {
+    document.body.classList.remove('light-mode');
+    toggleBall.classList.remove('toggle-ball-move');
+    if (legacyDarkMode) {
+      itemsToToggle.forEach(item => {
+        item.classList.add('active');
+      });
+      toggleBall.classList.add('active');
+    }
+  }
+}
+
+// Event listener for toggle button
+toggle.addEventListener('click', toggleTheme);
+
+// Initialize theme when page loads
+document.addEventListener('DOMContentLoaded', initializeTheme);
+
 // ===== DROPDOWN MENU =====
-const profileDropdown = document.querySelector('.profile-dropdown');
-const dropdownMenu = document.querySelector('.dropdown-menu');
+function toggleDropdown() {
+  const dropdown = document.getElementById('dropdownMenu');
+  dropdown.classList.toggle('show');
+}
 
-// Mở/đóng dropdown khi click
-profileDropdown.addEventListener('click', (e) => {
-  e.stopPropagation();
-  dropdownMenu.classList.toggle('show');
-});
-
-// Đóng dropdown khi click ra ngoài
-document.addEventListener('click', () => {
-  dropdownMenu.classList.remove('show');
-});
-
-// Ngăn dropdown đóng khi click vào menu
-dropdownMenu.addEventListener('click', (e) => {
-  e.stopPropagation();
-}); 
+// Close the dropdown if clicked outside
+window.onclick = function (event) {
+  if (!event.target.matches('.profile-trigger') && !event.target.closest('.profile-trigger')) {
+    const dropdowns = document.getElementsByClassName("dropdown-menu");
+    for (let i = 0; i < dropdowns.length; i++) {
+      const openDropdown = dropdowns[i];
+      if (openDropdown.classList.contains('show')) {
+        openDropdown.classList.remove('show');
+      }
+    }
+  }
+}
