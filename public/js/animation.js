@@ -42,19 +42,25 @@ toggle.addEventListener('click', toggleTheme);
 document.addEventListener('DOMContentLoaded', initializeTheme);
 
 // ===== DROPDOWN MENU =====
-function toggleDropdown() {
-  const dropdown = document.getElementById('dropdownMenu');
-  dropdown.classList.toggle('show');
-}
+document.addEventListener('DOMContentLoaded', function() {
+  const profileDropdown = document.querySelector('.profile-dropdown');
+  const dropdownMenu = document.querySelector('.dropdown-menu');
 
-window.onclick = function (event) {
-  if (!event.target.matches('.profile-trigger') && !event.target.closest('.profile-trigger')) {
-    const dropdowns = document.getElementsByClassName("dropdown-menu");
-    for (let i = 0; i < dropdowns.length; i++) {
-      dropdowns[i].classList.remove('show');
-    }
+  if (profileDropdown && dropdownMenu) {
+    // Toggle dropdown when clicking on profile
+    profileDropdown.addEventListener('click', function(e) {
+      e.stopPropagation();
+      dropdownMenu.classList.toggle('show');
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+      if (!profileDropdown.contains(e.target)) {
+        dropdownMenu.classList.remove('show');
+      }
+    });
   }
-};
+});
 
 // ===== API CONFIGURATION =====
 // Xóa API key hardcode để tăng bảo mật
@@ -112,9 +118,10 @@ document.addEventListener('DOMContentLoaded', () => {
   fetchInterstellarRating();
 });
 
-document.getElementById('searchInput').addEventListener('keyup', function (e) {
+document.getElementById('searchInput')?.addEventListener('keyup', function (e) {
   if (e.key === 'Enter') {
-      document.getElementById('searchIcon').click();
+    const searchIcon = document.getElementById('searchIcon');
+    if (searchIcon) searchIcon.click();
   }
 });
 
@@ -135,6 +142,8 @@ async function searchMovies(query) {
 }
 
 function renderSearchResults(results) {
+  if (!searchResults) return;
+  
   searchResults.innerHTML = '';
   
   if (results.length === 0) {
@@ -183,44 +192,211 @@ function renderSearchResults(results) {
 }
 
 // Xử lý sự kiện tìm kiếm
-searchButton.addEventListener('click', async () => {
-  const query = searchInput.value.trim();
-  if (query.length < 2) return;
-  
-  const results = await searchMovies(query);
-  renderSearchResults(results);
-});
-
-searchInput.addEventListener('keyup', async (e) => {
-  if (e.key === 'Enter') {
+if (searchButton) {
+  searchButton.addEventListener('click', async () => {
+    if (!searchInput) return;
     const query = searchInput.value.trim();
     if (query.length < 2) return;
     
     const results = await searchMovies(query);
     renderSearchResults(results);
-  }
-});
+  });
+}
 
-// Đóng kết quả khi click bên ngoài
-document.addEventListener('click', (e) => {
-  if (!e.target.closest('.search-container')) {
-    searchResults.style.display = 'none';
-  }
-});
-
-let searchTimeout;
-searchInput.addEventListener('input', () => {
-  clearTimeout(searchTimeout);
-  searchTimeout = setTimeout(async () => {
-    const query = searchInput.value.trim();
-    if (query.length >= 2) {
+if (searchInput) {
+  searchInput.addEventListener('keyup', async (e) => {
+    if (e.key === 'Enter') {
+      const query = searchInput.value.trim();
+      if (query.length < 2) return;
+      
       const results = await searchMovies(query);
       renderSearchResults(results);
     }
-  }, 300);
+  });
+
+  let searchTimeout;
+  searchInput.addEventListener('input', () => {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(async () => {
+      const query = searchInput.value.trim();
+      if (query.length >= 2) {
+        const results = await searchMovies(query);
+        renderSearchResults(results);
+      }
+    }, 300);
+  });
+}
+
+// Đóng kết quả khi click bên ngoài
+document.addEventListener('click', (e) => {
+  if (searchResults && !e.target.closest('.search-container')) {
+    searchResults.style.display = 'none';
+  }
 });
 
 function showMovieDetails(movieId) {
   window.location.href = `/movie.html?id=${movieId}`;
 }
 
+// ===== MENU NAVIGATION =====
+document.addEventListener('DOMContentLoaded', function() {
+  // Lấy tất cả các mục menu
+  const menuItems = document.querySelectorAll('.menu-list-item');
+  
+  // Gắn sự kiện click cho từng mục
+  menuItems.forEach(item => {
+    item.addEventListener('click', function() {
+      const text = this.textContent.trim().toLowerCase();
+      
+      // Điều hướng dựa trên text của menu item
+      switch(text) {
+        case 'home':
+          window.location.href = 'index.html';
+          break;
+        case 'movies':
+          window.location.href = 'movie.html';
+          break;
+        case 'series':
+          window.location.href = 'series.html';
+          break;
+        case 'popular':
+          // Thêm URL trang Popular khi có
+          break;
+        case 'trends':
+          // Thêm URL trang Trends khi có
+          break;
+        default:
+          break;
+      }
+    });
+  });
+});
+
+// ===== MOVIE LIST NAVIGATION =====
+function initializeMovieListNavigation(container) {
+  if (!container) return;
+
+  // Thêm wrapper cho container để chứa nút điều hướng
+  container.style.position = 'relative';
+  container.style.overflow = 'hidden';
+  container.style.scrollBehavior = 'smooth';
+  
+  // Ẩn thanh cuộn ngang
+  container.style.cssText += `
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;     /* Firefox */
+  `;
+  // Ẩn thanh cuộn cho Chrome, Safari và Opera
+  container.style.cssText += `
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  `;
+  
+  // Thêm nút điều hướng
+  const leftArrow = document.createElement('div');
+  const rightArrow = document.createElement('div');
+  
+  leftArrow.className = 'movie-nav-arrow left';
+  rightArrow.className = 'movie-nav-arrow right';
+  
+  leftArrow.innerHTML = '<i class="fas fa-chevron-left"></i>';
+  rightArrow.innerHTML = '<i class="fas fa-chevron-right"></i>';
+  
+  // Style cho container
+  container.parentElement.style.position = 'relative';
+  
+  // Thêm style cho nút
+  const arrowStyle = `
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 45px;
+    height: 45px;
+    background-color: rgba(20, 20, 20, 0.7);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.3s ease;
+    border: 2px solid rgba(255, 255, 255, 0.7);
+    color: white;
+    opacity: 0;
+  `;
+  
+  leftArrow.style.cssText = arrowStyle + 'left: 20px; display: none;';
+  rightArrow.style.cssText = arrowStyle + 'right: 20px;';
+  
+  // Thêm style hover effect
+  container.parentElement.addEventListener('mouseenter', () => {
+    if (container.scrollLeft > 0) {
+      leftArrow.style.opacity = '1';
+    }
+    if (container.scrollLeft < container.scrollWidth - container.clientWidth) {
+      rightArrow.style.opacity = '1';
+    }
+  });
+  
+  container.parentElement.addEventListener('mouseleave', () => {
+    leftArrow.style.opacity = '0';
+    rightArrow.style.opacity = '0';
+  });
+  
+  container.parentElement.appendChild(leftArrow);
+  container.parentElement.appendChild(rightArrow);
+
+  // Xử lý sự kiện click nút phải
+  const step = container.clientWidth - 100; // Điều chỉnh khoảng cách scroll
+  
+  rightArrow.addEventListener('click', () => {
+    container.scrollLeft += step;
+    leftArrow.style.display = 'flex';
+    
+    // Kiểm tra nếu đã scroll đến cuối
+    if (container.scrollLeft + container.clientWidth >= container.scrollWidth - 10) {
+      rightArrow.style.opacity = '0';
+    }
+  });
+  
+  // Xử lý sự kiện click nút trái
+  leftArrow.addEventListener('click', () => {
+    container.scrollLeft -= step;
+    rightArrow.style.opacity = '1';
+    
+    // Kiểm tra nếu đã scroll về đầu
+    if (container.scrollLeft <= step) {
+      leftArrow.style.opacity = '0';
+    }
+  });
+  
+  // Xử lý sự kiện scroll
+  container.addEventListener('scroll', () => {
+    // Hiển thị/ẩn nút trái
+    if (container.scrollLeft <= 10) {
+      leftArrow.style.opacity = '0';
+    } else {
+      leftArrow.style.opacity = '1';
+    }
+    
+    // Hiển thị/ẩn nút phải
+    if (container.scrollLeft + container.clientWidth >= container.scrollWidth - 10) {
+      rightArrow.style.opacity = '0';
+    } else {
+      rightArrow.style.opacity = '1';
+    }
+  });
+}
+
+// Initialize all movie lists when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+  // Initialize all movie lists
+  const movieLists = document.querySelectorAll('.movie-list');
+  console.log('Found movie lists:', movieLists.length);
+  
+  movieLists.forEach((list, index) => {
+    console.log(`Initializing movie list ${index + 1}`);
+    initializeMovieListNavigation(list);
+  });
+});

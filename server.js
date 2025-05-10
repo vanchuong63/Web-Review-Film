@@ -28,6 +28,45 @@ const tmdbHeaders = {
   'Content-Type': 'application/json;charset=utf-8'
 };
 
+// Route API proxy cho TMDB
+app.get('/api/tmdb/*', async (req, res) => {
+  try {
+    // Lấy phần đường dẫn sau /api/tmdb/
+    const endpoint = req.url.split('/api/tmdb/')[1];
+    
+    // Log endpoint để debug
+    console.log('Endpoint:', endpoint);
+    
+    // Xây dựng URL cho TMDB API
+    let tmdbUrl = `${TMDB_BASE_URL}/${endpoint}`;
+    
+    // Thêm API key vào params
+    const params = new URLSearchParams(req.query);
+    params.append('api_key', TMDB_API_KEY);
+    
+    const fullUrl = `${tmdbUrl}?${params.toString()}`;
+    console.log('Calling TMDB API:', fullUrl);
+    
+    // Gọi TMDB API
+    const response = await axios.get(fullUrl, {
+      headers: tmdbHeaders
+    });
+    
+    // Trả về dữ liệu cho client
+    res.json(response.data);
+  } catch (err) {
+    console.error('TMDB API Error:', err.message);
+    if (err.response) {
+      console.error('Status:', err.response.status);
+      console.error('Data:', err.response.data);
+    }
+    res.status(err.response?.status || 500).json({
+      error: 'Failed to fetch data from TMDB',
+      details: process.env.NODE_ENV === 'development' ? err.message : undefined
+    });
+  }
+});
+
 // Route API tìm kiếm phim
 app.get('/api/movies/:keyword', async (req, res) => {
   try {
@@ -166,6 +205,65 @@ app.get('/api/test', async (req, res) => {
   }
 });
 
+// Route API lấy phim phổ biến
+app.get('/api/movies/popular', async (req, res) => {
+  try {
+    const response = await axios.get(`${TMDB_BASE_URL}/movie/popular`, {
+      params: {
+        api_key: TMDB_API_KEY,
+        language: 'vi-VN',
+        page: req.query.page || 1
+      },
+      headers: tmdbHeaders
+    });
+
+    const results = response.data.results.map(movie => ({
+      id: movie.id,
+      title: movie.title,
+      year: movie.release_date ? movie.release_date.split('-')[0] : 'N/A',
+      poster: movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : null,
+      rating: movie.vote_average,
+      overview: movie.overview
+    }));
+
+    res.json({
+      results,
+      page: response.data.page,
+      total_pages: response.data.total_pages
+    });
+  } catch (err) {
+    console.error('API Error:', err.message);
+    res.status(500).json({
+      error: 'Failed to fetch popular movies',
+      details: process.env.NODE_ENV === 'development' ? err.message : undefined
+    });
+  }
+});
+
+// Cập nhật file .env nếu chưa có
+const fs = require('fs');
+const envFilePath = path.join(__dirname, '.env');
+
+if (!fs.existsSync(envFilePath) || !process.env.TMDB_API_KEY) {
+  console.log('Creating or updating .env file with TMDB API configuration template');
+  
+  const envTemplate = `# TMDB API Configuration
+TMDB_API_KEY=your_tmdb_api_key_here
+TMDB_ACCESS_TOKEN=your_tmdb_access_token_here
+
+# RapidAPI Configuration
+RAPIDAPI_KEY=your_rapidapi_key_here
+
+# Server Configuration
+PORT=3000
+NODE_ENV=development
+`;
+
+  // Ghi file .env mới hoặc cập nhật nếu đã tồn tại
+  fs.writeFileSync(envFilePath, envTemplate, { flag: 'w' });
+  console.log(`Please update your API keys in the .env file at ${envFilePath}`);
+}
+
 // Phục vụ file index.html cho tất cả các route khác
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
@@ -175,5 +273,5 @@ app.get('*', (req, res) => {
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
-  console.log(`API available at http://localhost:${PORT}/api/movies/:keyword`);
+  console.log(`API available at http://localhost:${PORT}/api/tmdb/*`);
 });

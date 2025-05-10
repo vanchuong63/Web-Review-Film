@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/movie.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&family=Sen:wght@400;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css">
+    <title>TV Series - IMDb</title>
+</head>
+<body>
+    <div class="navbar">
+        <div class="navbar-container">
+            <div class="logo-container">
+                <a href="index.html" class="logo-link">
+                    <h1 class="logo">IMDb</h1>
+                </a>
+            </div>
+            <div class="menu-container">
+                <ul class="menu-list">
+                    <li class="menu-list-item">Home</li>
+                    <li class="menu-list-item">Movies</li>
+                    <li class="menu-list-item active">Series</li>
+                    <li class="menu-list-item">Popular</li>
+                    <li class="menu-list-item">Trends</li>
+                    <li class="menu-list-item">
+                        <div class="search-container">
+                            <input type="text" id="searchInput" class="search-input" placeholder="Tìm kiếm phim...">
+                            <button id="searchButton" class="search-button">
+                              <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                        <div id="searchResults" class="search-results"></div>
+                    </li>
+                </ul>
+            </div>
+            <div class="profile-container">
+                <div class="profile-dropdown">
+                    <img class="profile-picture" src="AnyConv.com__c23cd18f-17b5-4077-a839-8449d2015ee4.jpg" alt="">
+                    <div class="profile-text-container">
+                        <span class="profile-text">Profile</span>
+                        <i class="fas fa-caret-down"></i>
+                    </div>
+                    <div class="dropdown-menu">
+                        <a href="login.html" class="dropdown-item"><i class="fas fa-sign-in-alt"></i> Đăng nhập</a>
+                        <a href="register.html" class="dropdown-item"><i class="fas fa-user-plus"></i> Đăng ký</a>
+                        <div class="dropdown-divider"></div>
+                        <a href="account.html" class="dropdown-item"><i class="fas fa-user"></i> Tài khoản</a>
+                        <a href="#" class="dropdown-item"><i class="fas fa-cog"></i> Cài đặt</a>
+                        <a href="#" class="dropdown-item"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a>
+                    </div>
+                </div>
+                <div class="toggle">
+                    <i class="fas fa-moon toggle-icon"></i>
+                    <i class="fas fa-sun toggle-icon"></i>
+                    <div class="toggle-ball"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="sidebar">
+        <i class="left-menu-icon fas fa-search"></i>
+        <i class="left-menu-icon fas fa-home"></i>
+        <i class="left-menu-icon fas fa-users"></i>
+        <i class="left-menu-icon fas fa-bookmark"></i>
+        <i class="left-menu-icon fas fa-tv"></i>
+        <i class="left-menu-icon fas fa-hourglass-start"></i>
+        <i class="left-menu-icon fas fa-shopping-cart"></i>
+    </div>
+    <div class="container">
+        <div class="content-container">
+            <div class="movie-page-header">
+                <h1>Discover TV Series</h1>
+                <div class="filter-container">
+                    <div class="filter-group">
+                        <label for="sortBy">Sort By:</label>
+                        <select id="sortBy" class="filter-select">
+                            <option value="popularity.desc">Popularity</option>
+                            <option value="vote_average.desc">Rating</option>
+                            <option value="first_air_date.desc">Release Date</option>
+                            <option value="name.asc">Name A-Z</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="genre">Genre:</label>
+                        <select id="genre" class="filter-select">
+                            <option value="">All Genres</option>
+                            <!-- Genres will be loaded dynamically -->
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="year">Year:</label>
+                        <select id="year" class="filter-select">
+                            <option value="">All Years</option>
+                            <!-- Years will be populated dynamically -->
+                        </select>
+                    </div>
+                    <button id="filterButton" class="filter-button">
+                        <i class="fas fa-filter"></i> Filter
+                    </button>
+                </div>
+            </div>
+            
+            <div class="movie-grid" id="seriesGrid">
+                <!-- Series will be loaded here dynamically -->
+                <div class="loading">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Loading series...</p>
+                </div>
+            </div>
+            
+            <div class="pagination">
+                <button id="prevPage" class="pagination-button" disabled>
+                    <i class="fas fa-chevron-left"></i> Previous
+                </button>
+                <span id="currentPage" class="current-page">Page 1</span>
+                <button id="nextPage" class="pagination-button">
+                    Next <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="js/animation.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/series.js"></script>
+</body>
+</html> 
