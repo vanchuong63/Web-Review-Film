@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cài Đặt - IMDb</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css">
+    <style>
+        /* Thiết lập chung cho trang cài đặt */
+        .settings-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #141414;
+            padding: 20px;
+        }
+        
+        .settings-box {
+            width: 100%;
+            max-width: 900px;
+            background-color: #1f1f1f;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .settings-header {
+            background-color: #252525;
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid #333;
+        }
+        
+        .settings-header h1 {
+            color: #4CAF50;
+            margin: 0;
+            font-size: 28px;
+        }
+        
+        .settings-header h2 {
+            color: #fff;
+            margin: 10px 0 5px;
+            font-size: 24px;
+        }
+        
+        .settings-header p {
+            color: #aaa;
+            margin: 0;
+            font-size: 16px;
+        }
+        
+        .settings-content {
+            display: flex;
+            flex: 1;
+        }
+        
+        /* Sidebar menu */
+        .settings-sidebar {
+            width: 250px;
+            background-color: #252525;
+            padding: 20px 0;
+            border-right: 1px solid #333;
+        }
+        
+        .settings-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .settings-menu li {
+            margin-bottom: 5px;
+        }
+        
+        .settings-menu a {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: #ddd;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+        
+        .settings-menu a:hover {
+            background-color: rgba(76, 175, 80, 0.1);
+            color: #4CAF50;
+            border-left-color: #4CAF50;
+            transform: translateX(5px);
+        }
+        
+        .settings-menu a.active {
+            background-color: rgba(76, 175, 80, 0.2);
+            color: #4CAF50;
+            border-left-color: #4CAF50;
+        }
+        
+        .settings-menu i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+        
+        /* Nội dung cài đặt */
+        .settings-main {
+            flex: 1;
+            padding: 30px;
+            color: #ddd;
+            overflow-y: auto;
+            max-height: 600px;
+        }
+        
+        .settings-section {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .settings-section.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .settings-section h3 {
+            color: #4CAF50;
+            margin-top: 0;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #333;
+        }
+        
+        /* Form elements */
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #bbb;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            background-color: #333;
+            border: 1px solid #444;
+            border-radius: 5px;
+            color: #fff;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus {
+            border-color: #4CAF50;
+            box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+            outline: none;
+        }
+        
+        /* Toggle switch */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #555;
+            transition: .4s;
+            border-radius: 30px;
+        }
+        
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .toggle-slider {
+            background-color: #4CAF50;
+        }
+        
+        input:checked + .toggle-slider:before {
+            transform: translateX(30px);
+        }
+        
+        .toggle-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .toggle-label span {
+            margin-right: 10px;
+        }
+        
+        /* Buttons */
+        .btn {
+            padding: 12px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            background-color: #3e8e41;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn-danger {
+            background-color: #f44336;
+        }
+        
+        .btn-danger:hover {
+            background-color: #d32f2f;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        /* Thông báo */
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            display: none;
+        }
+        
+        .alert-success {
+            background-color: rgba(76, 175, 80, 0.2);
+            color: #4CAF50;
+            border: 1px solid rgba(76, 175, 80, 0.5);
+        }
+        
+        .alert-danger {
+            background-color: rgba(244, 67, 54, 0.2);
+            color: #f44336;
+            border: 1px solid rgba(244, 67, 54, 0.5);
+        }
+        
+        /* Chọn theme */
+        .theme-options {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .theme-option {
+            width: 100px;
+            height: 70px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid transparent;
+        }
+        
+        .theme-option:hover {
+            transform: scale(1.05);
+        }
+        
+        .theme-option.active {
+            border-color: #4CAF50;
+            box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.5);
+        }
+        
+        .theme-dark {
+            background-color: #1f1f1f;
+        }
+        
+        .theme-light {
+            background-color: #f5f5f5;
+        }
+        
+        .theme-blue {
+            background-color: #1a2b3c;
+        }
+        
+        .theme-option::after {
+            content: "";
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+        }
+        
+        .theme-dark::after {
+            background-color: #333;
+        }
+        
+        .theme-light::after {
+            background-color: #ddd;
+        }
+        
+        .theme-blue::after {
+            background-color: #3498db;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .settings-content {
+                flex-direction: column;
+            }
+            
+            .settings-sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid #333;
+                padding: 10px 0;
+            }
+            
+            .settings-menu {
+                display: flex;
+                overflow-x: auto;
+                padding: 0 10px;
+            }
+            
+            .settings-menu li {
+                margin-bottom: 0;
+                margin-right: 5px;
+            }
+            
+            .settings-menu a {
+                padding: 10px 15px;
+                border-left: none;
+                border-bottom: 3px solid transparent;
+                white-space: nowrap;
+            }
+            
+            .settings-menu a:hover,
+            .settings-menu a.active {
+                border-left-color: transparent;
+                border-bottom-color: #4CAF50;
+                transform: translateY(-3px);
+            }
+        }
+        
+        /* Hiệu ứng hover cho các phần tử */
+        .form-control:hover {
+            background-color: #3a3a3a;
+        }
+        
+        .settings-menu a i {
+            transition: transform 0.3s ease;
+        }
+        
+        .settings-menu a:hover i {
+            transform: scale(1.2);
+        }
+        
+        .btn {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 5px;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.5);
+            opacity: 0;
+            border-radius: 100%;
+            transform: scale(1, 1) translate(-50%);
+            transform-origin: 50% 50%;
+        }
+        
+        .btn:hover::after {
+            animation: ripple 1s ease-out;
+        }
+        
+        @keyframes ripple {
+            0% {
+                transform: scale(0, 0);
+                opacity: 0.5;
+            }
+            100% {
+                transform: scale(20, 20);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="settings-container">
+        <div class="settings-box">
+            <div class="settings-header">
+                <h1 class="logo">IMDb</h1>
+                <h2>Cài Đặt Tài Khoản</h2>
+                <p>Tùy chỉnh trải nghiệm của bạn</p>
+            </div>
+            
+            <div class="settings-content">
+                <div class="settings-sidebar">
+                    <ul class="settings-menu">
+                        <li><a href="#profile" class="active" data-section="profile-section"><i class="fas fa-user"></i> Hồ sơ</a></li>
+                        <li><a href="#security" data-section="security-section"><i class="fas fa-lock"></i> Bảo mật</a></li>
+                        <li><a href="#notifications" data-section="notifications-section"><i class="fas fa-bell"></i> Thông báo</a></li>
+                        <li><a href="#appearance" data-section="appearance-section"><i class="fas fa-paint-brush"></i> Giao diện</a></li>
+                        <li><a href="#privacy" data-section="privacy-section"><i class="fas fa-shield-alt"></i> Quyền riêng tư</a></li>
+                        <li><a href="#language" data-section="language-section"><i class="fas fa-language"></i> Ngôn ngữ</a></li>
+                        <li><a href="#data" data-section="data-section"><i class="fas fa-database"></i> Dữ liệu</a></li>
+                    </ul>
+                </div>
+                
+                <div class="settings-main">
+                    <!-- Thông báo -->
+                    <div id="alert-success" class="alert alert-success">Cài đặt đã được lưu thành công!</div>
+                    <div id="alert-danger" class="alert alert-danger">Đã xảy ra lỗi. Vui lòng thử lại sau.</div>
+                    
+                    <!-- Phần Hồ sơ -->
+                    <div id="profile-section" class="settings-section active">
+                        <h3>Cài đặt hồ sơ</h3>
+                        <form id="profile-form">
+                            <div class="form-group">
+                                <label for="username">Tên người dùng</label>
+                                <input type="text" id="username" class="form-control" value="Username">
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email</label>
+                                <input type="email" id="email" class="form-control" value="user@example.com">
+                            </div>
+                            <div class="form-group">
+                                <label for="bio">Giới thiệu</label>
+                                <textarea id="bio" class="form-control" rows="4">Tôi là một người yêu thích phim ảnh và thường xuyên xem phim vào cuối tuần.</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Ảnh đại diện</label>
+                                <div style="display: flex; align-items: center; gap: 20px;">
+                                    <img src="AnyConv.com__c23cd18f-17b5-4077-a839-8449d2015ee4.jpg" alt="Profile Picture" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover;">
+                                    <button type="button" class="btn">Thay đổi ảnh</button>
+                                </div>
+                            </div>
+                            <div class="btn-group">
+                                <button type="submit" class="btn">Lưu thay đổi</button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <!-- Phần Bảo mật -->
+                    <div id="security-section" class="settings-section">
+                        <h3>Cài đặt bảo mật</h3>
+                        <form id="security-form">
+                            <div class="form-group">
+                                <label for="current-password">Mật khẩu hiện tại</label>
+                                <input type="password" id="current-password" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="new-password">Mật khẩu mới</label>
+                                <input type="password" id="new-password" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="confirm-password">Xác nhận mật khẩu mới</label>
+                                <input type="password" id="confirm-password" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <div class="toggle-label">
+                                    <span>Xác thực hai yếu tố</span>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="toggle-label">
+                                    <span>Thông báo khi có đăng nhập mới</span>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" checked>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="btn-group">
+                                <button type="submit" class="btn">Cập nhật mật khẩu</button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <!-- Phần Thông báo -->
+                    <div id="notifications-section" class="settings-section">
+                        <h3>Cài đặt thông báo</h3>
+                        <form id="notifications-form">
+                            <div class="form-group">
+                                <div class="toggle-label">
+                                    <span>Thông báo phim mới</span>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" checked>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="toggle-label">
+                                    <span>Thông báo đánh giá mới</span>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" checked>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="toggle-label">
+                                    <span>Thông báo bình luận</span>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" checked>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="toggle-label">
+                                    <span>Thông báo qua email</span>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="toggle-label">
+                                    <span>Thông báo khuyến mãi</span>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="btn-group">
+                                <button type="submit" class="btn">Lưu thay đổi</button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <!-- Phần Giao diện -->
+                    <div id="appearance-section" class="settings-section">
+                        <h3>Cài đặt giao diện</h3>
+                        <form id="appearance-form">
+                            <div class="form-group">
+                                <label>Chủ đề</label>
+                                <div class="theme-options">
+                                    <div class="theme-option theme-dark active" data-theme="dark"></div>
+                                    <div class="theme-option theme-light" data-theme="light"></div>
+                                    <div class="theme-option theme-blue" data-theme="blue"></div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="font-size">Cỡ chữ</label>
+                                <select id="font-size" class="form-control">
+                                    <option value="small">Nhỏ</option>
+                                    <option value="medium" selected>Vừa</option>
+                                    <option value="large">Lớn</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <div class="toggle-label">
+                                    <span>Hiệu ứng chuyển động</span>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" checked>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="toggle-label">
+                                    <span>Chế độ tiết kiệm dữ liệu</span>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="btn-group">
+                                <button type="submit" class="btn">Lưu thay đổi</button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <!-- Phần Quyền riêng tư -->
+                    <div id="privacy-section" class="settings-section">
+                        <h3>Cài đặt quyền riêng tư</h3>
+                        <form id="privacy-form">
+                            <div class="form-group">
+                                <div class="toggle-label">
+                                    <span>Hiển thị hoạt động xem phim</span>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" checked>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="toggle-label">
+                                    <span>Hiển thị đánh giá phim</span>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" checked>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="toggle-label">
+                                    <span>Cho phép tìm kiếm hồ sơ</span>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" checked>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="toggle-label">
+                                    <span>Cho phép đề xuất bạn bè</span>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="toggle-label">
+                                    <span>Chia sẻ dữ liệu để cải thiện dịch vụ</span>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" checked>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="btn-group">
+                                <button type="submit" class="btn">Lưu thay đổi</button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <!-- Phần Ngôn ngữ -->
+                    <div id="language-section" class="settings-section">
+                        <h3>Cài đặt ngôn ngữ</h3>
+                        <form id="language-form">
+                            <div class="form-group">
+                                <label for="interface-language">Ngôn ngữ giao diện</label>
+                                <select id="interface-language" class="form-control">
+                                    <option value="vi" selected>Tiếng Việt</option>
+                                    <option value="en">Tiếng Anh</option>
+                                    <option value="fr">Tiếng Pháp</option>
+                                    <option value="de">Tiếng Đức</option>
+                                    <option value="ja">Tiếng Nhật</option>
+                                    <option value="ko">Tiếng Hàn</option>
+                                    <option value="zh">Tiếng Trung</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="content-language">Ngôn ngữ nội dung ưa thích</label>
+                                <select id="content-language" class="form-control">
+                                    <option value="all" selected>Tất cả ngôn ngữ</option>
+                                    <option value="vi">Tiếng Việt</option>
+                                    <option value="en">Tiếng Anh</option>
+                                    <option value="fr">Tiếng Pháp</option>
+                                    <option value="de">Tiếng Đức</option>
+                                    <option value="ja">Tiếng Nhật</option>
+                                    <option value="ko">Tiếng Hàn</option>
+                                    <option value="zh">Tiếng Trung</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <div class="toggle-label">
+                                    <span>Tự động dịch đánh giá</span>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" checked>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="btn-group">
+                                <button type="submit" class="btn">Lưu thay đổi</button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <!-- Phần Dữ liệu -->
+                    <div id="data-section" class="settings-section">
+                        <h3>Quản lý dữ liệu</h3>
+                        <form id="data-form">
+                            <div class="form-group">
+                                <button type="button" class="btn" id="export-data">Xuất dữ liệu cá nhân</button>
+                                <p style="margin-top: 5px; font-size: 14px; color: #aaa;">Tải xuống tất cả dữ liệu cá nhân của bạn dưới dạng file JSON.</p>
+                            </div>
+                            <div class="form-group">
+                                <button type="button" class="btn" id="clear-history">Xóa lịch sử xem</button>
+                                <p style="margin-top: 5px; font-size: 14px; color: #aaa;">Xóa toàn bộ lịch sử xem phim của bạn.</p>
+                            </div>
+                            <div class="form-group">
+                                <button type="button" class="btn btn-danger" id="delete-account">Xóa tài khoản</button>
+                                <p style="margin-top: 5px; font-size: 14px; color: #aaa;">Xóa vĩnh viễn tài khoản và tất cả dữ liệu liên quan.</p>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="padding: 20px; text-align: center; border-top: 1px solid #333;">
+                <a href="index.html" class="back-home" style="color: #4CAF50; text-decoration: none;">
+                    <i class="fas fa-arrow-left"></i>
+                    Quay lại trang chủ
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Xử lý chuyển đổi giữa các tab cài đặt
+            const menuItems = document.querySelectorAll('.settings-menu a');
+            const sections = document.querySelectorAll('.settings-section');
+            
+            menuItems.forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Xóa class active từ tất cả menu items
+                    menuItems.forEach(i => i.classList.remove('active'));
+                    
+                    // Thêm class active cho menu item được click
+                    this.classList.add('active');
+                    
+                    // Ẩn tất cả các section
+                    sections.forEach(section => section.classList.remove('active'));
+                    
+                    // Hiển thị section tương ứng
+                    const targetSection = this.getAttribute('data-section');
+                    document.getElementById(targetSection).classList.add('active');
+                });
+            });
+            
+            // Xử lý chọn theme
+            const themeOptions = document.querySelectorAll('.theme-option');
+            
+            themeOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    // Xóa class active từ tất cả options
+                    themeOptions.forEach(opt => opt.classList.remove('active'));
+                    
+                    // Thêm class active cho option được chọn
+                    this.classList.add('active');
+                    
+                    // Lưu theme đã chọn (có thể lưu vào localStorage)
+                    const selectedTheme = this.getAttribute('data-theme');
+                    localStorage.setItem('theme', selectedTheme);
+                });
+            });
+            
+            // Xử lý form submit
+            const forms = document.querySelectorAll('form');
+            
+            forms.forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    // Hiển thị thông báo thành công
+                    document.getElementById('alert-success').style.display = 'block';
+                    
+                    // Ẩn thông báo sau 3 giây
+                    setTimeout(() => {
+                        document.getElementById('alert-success').style.display = 'none';
+                    }, 3000);
+                });
+            });
+            
+            // Xử lý nút xóa tài khoản
+            document.getElementById('delete-account').addEventListener('click', function() {
+                const confirmed = confirm('Bạn có chắc chắn muốn xóa tài khoản? Hành động này không thể hoàn tác.');
+                
+                if (confirmed) {
+                    // Gửi yêu cầu xóa tài khoản đến server
+                    fetch('php/delete_account.php', {
+                        method: 'POST',
+                        credentials: 'same-origin'
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Chuyển hướng đến trang chủ sau khi xóa tài khoản
+                            window.location.href = 'index.html?deleted=true';
+                        } else {
+                            // Hiển thị thông báo lỗi
+                            document.getElementById('alert-danger').style.display = 'block';
+                            setTimeout(() => {
+                                document.getElementById('alert-danger').style.display = 'none';
+                            }, 3000);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        document.getElementById('alert-danger').style.display = 'block';
+                        setTimeout(() => {
+                            document.getElementById('alert-danger').style.display = 'none';
+                        }, 3000);
+                    });
+                }
+            });
+            
+            // Xử lý nút xóa lịch sử xem
+            document.getElementById('clear-history').addEventListener('click', function() {
+                const confirmed = confirm('Bạn có chắc chắn muốn xóa lịch sử xem phim? Hành động này không thể hoàn tác.');
+                
+                if (confirmed) {
+                    // Gửi yêu cầu xóa lịch sử xem đến server
+                    fetch('php/clear_history.php', {
+                        method: 'POST',
+                        credentials: 'same-origin'
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Hiển thị thông báo thành công
+                            document.getElementById('alert-success').style.display = 'block';
+                            document.getElementById('alert-success').textContent = 'Đã xóa lịch sử xem phim thành công!';
+                            setTimeout(() => {
+                                document.getElementById('alert-success').style.display = 'none';
+                            }, 3000);
+                        } else {
+                            // Hiển thị thông báo lỗi
+                            document.getElementById('alert-danger').style.display = 'block';
+                            setTimeout(() => {
+                                document.getElementById('alert-danger').style.display = 'none';
+                            }, 3000);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        document.getElementById('alert-danger').style.display = 'block';
+                        setTimeout(() => {
+                            document.getElementById('alert-danger').style.display = 'none';
+                        }, 3000);
+                    });
+                }
+            });
+            
+            // Xử lý nút xuất dữ liệu
+            document.getElementById('export-data').addEventListener('click', function() {
+                // Gửi yêu cầu xuất dữ liệu đến server
+                fetch('php/export_data.php', {
+                    method: 'GET',
+                    credentials: 'same-origin'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Tạo file JSON để tải xuống
+                    const dataStr = JSON.stringify(data, null, 2);
+                    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+                    
+                    const exportFileDefaultName = 'user_data.json';
+                    
+                    const linkElement = document.createElement('a');
+                    linkElement.setAttribute('href', dataUri);
+                    linkElement.setAttribute('download', exportFileDefaultName);
+                    linkElement.click();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('alert-danger').style.display = 'block';
+                    setTimeout(() => {
+                        document.getElementById('alert-danger').style.display = 'none';
+                    }, 3000);
+                });
+            });
+            
+            // Kiểm tra theme đã lưu và áp dụng
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme) {
+                themeOptions.forEach(opt => {
+                    if (opt.getAttribute('data-theme') === savedTheme) {
+                        opt.classList.add('active');
+                    } else {
+                        opt.classList.remove('active');
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
