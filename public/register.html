@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng ký tài khoản - IMDb</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css">
+    <style>
+        .form-group {
+            position: relative;
+        }
+        .password-container {
+            position: relative;
+            width: calc(100% - 40px);
+            margin-left: 40px;
+        }
+        .toggle-password {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #888;
+            z-index: 10;
+        }
+        .toggle-password:hover {
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-box">
+            <div class="login-header">
+                <h1 class="logo">IMDb</h1>
+                <h2>Đăng ký tài khoản</h2>
+                <p>Tạo tài khoản để trải nghiệm đầy đủ tính năng</p>
+            </div>
+            <div id="error-messages" class="error-container"></div>
+            <form class="login-form" id="register-form">
+                <div class="form-group">
+                    <i class="fas fa-user"></i>
+                    <input type="text" name="username" placeholder="Tên đăng nhập" required>
+                </div>
+                <div class="form-group">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" name="email" placeholder="Email" required>
+                </div>
+                <div class="form-group">
+                    <i class="fas fa-lock"></i>
+                    <div class="password-container">
+                        <input type="password" name="password" id="password" placeholder="Mật khẩu" required>
+                        <i class="toggle-password fas fa-eye" onclick="togglePasswordVisibility('password')"></i>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <i class="fas fa-lock"></i>
+                    <div class="password-container">
+                        <input type="password" name="confirm_password" id="confirm_password" placeholder="Xác nhận mật khẩu" required>
+                        <i class="toggle-password fas fa-eye" onclick="togglePasswordVisibility('confirm_password')"></i>
+                    </div>
+                </div>
+                <button type="submit" class="login-button">
+                    <i class="fas fa-user-plus"></i>
+                    Đăng ký
+                </button>
+            </form>
+            <div class="login-footer">
+                <p>Đã có tài khoản? <a href="login.html">Đăng nhập ngay</a></p><a href="index.html" class="back-home">
+                    <i class="fas fa-arrow-left"></i>
+                    Quay lại trang chủ
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function togglePasswordVisibility(inputId) {
+            const passwordInput = document.getElementById(inputId);
+            const icon = passwordInput.parentElement.querySelector('.toggle-password');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('register-form');
+            const errorContainer = document.getElementById('error-messages');
+            
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const username = form.querySelector('input[name="username"]').value;
+                const email = form.querySelector('input[name="email"]').value;
+                const password = form.querySelector('input[name="password"]').value;
+                const confirmPassword = form.querySelector('input[name="confirm_password"]').value;
+                
+                // Kiểm tra mật khẩu xác nhận
+                if (password !== confirmPassword) {
+                    errorContainer.innerHTML = '<div class="error-message">Mật khẩu xác nhận không khớp</div>';
+                    return;
+                }
+                
+                try {
+                    const response = await fetch('/api/auth/register', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            username,
+                            email,
+                            password
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (response.ok) {
+                        // Đăng ký thành công
+                        window.location.href = 'login.html?registered=success';
+                    } else {
+                        // Hiển thị lỗi
+                        errorContainer.innerHTML = `<div class="error-message">${data.message}</div>`;
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    errorContainer.innerHTML = '<div class="error-message">Đã xảy ra lỗi. Vui lòng thử lại sau.</div>';
+                }
+            });
+            
+            // Kiểm tra nếu có thông báo đăng ký thành công từ URL
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('error')) {
+                errorContainer.innerHTML = '<div class="error-message">Đã xảy ra lỗi. Vui lòng thử lại.</div>';
+            }
+        });
+    </script>
+</body>
+</html>

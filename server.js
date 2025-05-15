@@ -3,6 +3,7 @@ const express = require("express");
 const axios = require("axios");
 const cors = require("cors");
 const path = require("path");
+const db = require('./config/database'); // Move this import here
 
 // Khởi tạo ứng dụng Express
 const app = express();
@@ -10,6 +11,15 @@ const app = express();
 // Cài đặt middleware
 app.use(cors());
 app.use(express.json());
+
+// Kiểm tra kết nối database (move this check after middleware setup)
+db.query('SELECT 1')
+  .then(() => {
+    console.log('Kết nối database thành công');
+  })
+  .catch(err => {
+    console.error('Lỗi kết nối database:', err);
+  });
 app.use(express.urlencoded({ extended: true }));
 
 // Phục vụ các file tĩnh
@@ -270,7 +280,7 @@ app.get('*', (req, res) => {
 });
 
 // Khởi động server
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
   console.log(`API available at http://localhost:${PORT}/api/tmdb/*`);

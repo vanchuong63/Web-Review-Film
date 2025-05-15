@@ -16,22 +16,28 @@
                 <p>Quản lý thông tin cá nhân của bạn</p>
             </div>
             <div class="account-info">
+                <!-- Thêm input file ẩn cho upload ảnh -->
                 <div class="profile-image">
-                    <img src="AnyConv.com__c23cd18f-17b5-4077-a839-8449d2015ee4.jpg" alt="Profile Picture">
-                    <button class="change-photo"><i class="fas fa-camera"></i></button>
+                    <img id="profileImage" src="AnyConv.com__c23cd18f-17b5-4077-a839-8449d2015ee4.jpg" alt="Profile Picture">
+                    <input type="file" id="imageUpload" accept="image/*" style="display: none">
+                    <button class="change-photo" onclick="document.getElementById('imageUpload').click()">
+                        <i class="fas fa-camera"></i>
+                    </button>
                 </div>
-                <form class="login-form">
+                
+                <!-- Cập nhật form để có thể chỉnh sửa -->
+                <form class="login-form" id="profileForm">
                     <div class="form-group">
                         <i class="fas fa-user"></i>
-                        <input type="text" value="Username" readonly>
+                        <input type="text" id="username" name="username" value="Username">
                     </div>
                     <div class="form-group">
                         <i class="fas fa-envelope"></i>
-                        <input type="email" value="user@example.com" readonly>
+                        <input type="email" id="email" name="email" value="user@example.com">
                     </div>
                     <div class="form-group">
-                        <i class="fas fa-clock"></i>
-                        <input type="text" value="01/01/2024" readonly>
+                        <i class="fas fa-calendar"></i>
+                        <input type="date" id="birthdate" name="birthdate">
                     </div>
                     <div class="account-stats">
                         <div class="stat-item">
@@ -47,6 +53,10 @@
                             <span>12 Yêu thích</span>
                         </div>
                     </div>
+                    <button type="submit" class="login-button save-button" style="display: none;">
+                        <i class="fas fa-save"></i>
+                        Lưu thay đổi
+                    </button>
                     <button type="button" class="login-button edit-button">
                         <i class="fas fa-edit"></i>
                         Chỉnh sửa thông tin
@@ -63,6 +73,7 @@
             </div>
         </div>
     </div>
-    <script src="js/auth.js"></script>
+    <!-- Thay thế script cũ bằng script mới -->
+    <script src="js/account.js"></script>
 </body>
 </html>

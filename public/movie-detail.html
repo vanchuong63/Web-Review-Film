@@ -20,10 +20,21 @@
             <div class="menu-container">
                 <ul class="menu-list">
                     <li class="menu-list-item"><a href="index.html">Home</a></li>
-                    <li class="menu-list-item">Movies</li>
-                    <li class="menu-list-item">Series</li>
-                    <li class="menu-list-item">Popular</li>
-                    <li class="menu-list-item">Trends</li>
+                    <li class="menu-list-item"><a href="movie.html">Movies</a></li>
+                    <li class="menu-list-item"><a href="series.html">Series</a></li>
+                    <li class="menu-list-item"><a href="movie.html?sort=popularity.desc">Popular</a></li>
+                    <li class="menu-list-item"><a href="movie.html?sort=vote_average.desc">Trends</a></li>
+                    <li class="menu-list-item">
+                        <div class="search-container">
+                            <form id="search-form" class="search-form">
+                                <input type="text" id="searchInput" class="search-input" placeholder="Tìm kiếm phim...">
+                                <button type="submit" id="searchButton" class="search-button">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </form>
+                            <div id="searchResults" class="search-results"></div>
+                        </div>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -38,4 +49,4 @@
 
     <script src="js/movie-detail.js"></script>
 </body>
-</html> 
+</html>

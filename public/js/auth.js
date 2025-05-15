@@ -81,4 +81,45 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Check login status when page loads
     checkLoginStatus();
-}); 
+});
+
+// Thêm xử lý form đăng ký
+const registerForm = document.getElementById('register-form');
+if (registerForm) {
+    registerForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const username = registerForm.querySelector('input[name="username"]').value;
+        const email = registerForm.querySelector('input[name="email"]').value;
+        const password = registerForm.querySelector('input[name="password"]').value;
+        const confirmPassword = registerForm.querySelector('input[name="confirm_password"]').value;
+        
+        // Kiểm tra mật khẩu xác nhận
+        if (password !== confirmPassword) {
+            alert('Mật khẩu xác nhận không khớp');
+            return;
+        }
+        
+        try {
+            const response = await fetch('/api/auth/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username, email, password })
+            });
+            
+            const data = await response.json();
+            
+            if (response.ok) {
+                alert('Đăng ký thành công!');
+                window.location.href = '/login.html';
+            } else {
+                alert(data.message || 'Đăng ký thất bại');
+            }
+        } catch (error) {
+            console.error('Lỗi:', error);
+            alert('Đã có lỗi xảy ra khi đăng ký');
+        }
+    });
+}
