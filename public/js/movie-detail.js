@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const movieSettings = {
         async: true,
         crossDomain: true,
-        url: `https://api.themoviedb.org/3/movie/${movieId}?language=en-US`,
+        url: `https://api.themoviedb.org/3/movie/${movieId}?language=vi-VN`,  // Thay đổi en-US thành vi-VN
         method: 'GET',
         headers: {
             'accept': 'application/json',
@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const videoSettings = {
         async: true,
         crossDomain: true,
-        url: `https://api.themoviedb.org/3/movie/${movieId}/videos?language=en-US`,
+        url: `https://api.themoviedb.org/3/movie/${movieId}/videos?language=vi-VN`,  // Thay đổi en-US thành vi-VN
         method: 'GET',
         headers: {
             'accept': 'application/json',
@@ -175,4 +175,4 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
         `;
     });
-}); 
+});

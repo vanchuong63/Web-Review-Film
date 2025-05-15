@@ -235,7 +235,7 @@ document.addEventListener('click', (e) => {
 });
 
 function showMovieDetails(movieId) {
-  window.location.href = `/movie.html?id=${movieId}`;
+  window.location.href = `/movie-detail.html?id=${movieId}`;
 }
 
 // ===== MENU NAVIGATION =====
