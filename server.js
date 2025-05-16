@@ -21,6 +21,8 @@ db.query('SELECT 1')
     console.error('Lỗi kết nối database:', err);
   });
 app.use(express.urlencoded({ extended: true }));
+const authRoutes = require('./routes/auth');
+app.use('/api/auth', authRoutes);
 
 // Phục vụ các file tĩnh
 app.use(express.static(path.join(__dirname, 'public')));

@@ -4,31 +4,57 @@ document.addEventListener('DOMContentLoaded', function() {
     const loginForm = document.querySelector('.login-form');
     
     if (loginForm) {
-        loginForm.addEventListener('submit', function(e) {
+        loginForm.addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            const username = loginForm.querySelector('input[type="text"]').value;
-            const password = loginForm.querySelector('input[type="password"]').value;
+            const username = loginForm.querySelector('input[name="username"]').value;
+            const password = loginForm.querySelector('input[name="password"]').value;
+            const errorMessage = document.getElementById('error-message');
             
-            // Simple validation
+            // Ẩn thông báo lỗi cũ (nếu có)
+            errorMessage.style.display = 'none';
+            
+            // Kiểm tra nhập liệu cơ bản
             if (!username || !password) {
-                alert('Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu');
+                errorMessage.textContent = 'Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu';
+                errorMessage.style.display = 'block';
                 return;
             }
             
-            // For demo purposes - simulate login success
-            // In a real application, this would make an API call to verify credentials
-            console.log('Login attempt:', { username, password });
-            
-            // Store login status in localStorage
-            localStorage.setItem('isLoggedIn', 'true');
-            localStorage.setItem('username', username);
-            
-            // Redirect to homepage after successful login
-            window.location.href = '/index.html';
+            try {
+                // Gọi API đăng nhập để xác thực với database
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    // Đăng nhập thành công
+                    localStorage.setItem('isLoggedIn', 'true');
+                    localStorage.setItem('username', username);
+                    localStorage.setItem('token', data.token); // Lưu token JWT
+                    localStorage.setItem('userId', data.user.id); // Lưu ID người dùng
+                    
+                    // Chuyển hướng về trang chủ
+                    window.location.href = '/index.html';
+                } else {
+                    // Hiển thị thông báo lỗi
+                    errorMessage.textContent = data.message || 'Thông tin đăng nhập không chính xác';
+                    errorMessage.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Lỗi đăng nhập:', error);
+                errorMessage.textContent = 'Đã xảy ra lỗi khi đăng nhập. Vui lòng thử lại sau.';
+                errorMessage.style.display = 'block';
+            }
         });
     }
-    
+        
     // Check login status
     function checkLoginStatus() {
         const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
