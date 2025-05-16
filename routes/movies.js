@@ -41,7 +41,7 @@ router.get('/detail/:id', async (req, res) => {
     }
 });
 
-// API tìm kiếm phim
+// API tìm kiếm phim nâng cao
 router.get('/search', async (req, res) => {
     const query = req.query.query;
     if (!query) {
@@ -49,8 +49,13 @@ router.get('/search', async (req, res) => {
     }
 
     try {
+        // Thêm các tham số tùy chọn
+        const page = req.query.page || 1;
+        const language = req.query.language || 'vi-VN';
+        const include_adult = req.query.include_adult === 'true';
+        
         const response = await fetch(
-            `https://api.themoviedb.org/3/search/movie?query=${encodeURIComponent(query)}&language=vi-VN&page=1`, 
+            `https://api.themoviedb.org/3/search/movie?query=${encodeURIComponent(query)}&language=${language}&page=${page}&include_adult=${include_adult}`, 
             {
                 headers: {
                     'Authorization': `Bearer ${process.env.TMDB_ACCESS_TOKEN}`,
@@ -59,6 +64,12 @@ router.get('/search', async (req, res) => {
             }
         );
         const data = await response.json();
+        
+        // Thêm thông tin debug khi ở chế độ development
+        if (process.env.NODE_ENV === 'development') {
+            console.log(`Search query: "${query}" - Found ${data.results?.length || 0} results`);
+        }
+        
         res.json(data);
     } catch (error) {
         console.error('Lỗi tìm kiếm phim:', error);

@@ -25,17 +25,6 @@
                     <li class="menu-list-item">Series</li>
                     <li class="menu-list-item">Popular</li>
                     <li class="menu-list-item">Trends</li>
-                    <li class="menu-list-item">
-                        <div class="search-container">
-                            <form id="search-form" class="search-form">
-                                <input type="text" id="searchInput" class="search-input" placeholder="Tìm kiếm phim...">
-                                <button type="submit" id="searchButton" class="search-button">
-                                    <i class="fas fa-search"></i>
-                                </button>
-                            </form>
-                            <div id="searchResults" class="search-results"></div>
-                        </div>
-                    </li>
                 </ul>
             </div>
             <div class="profile-container">
@@ -71,16 +60,33 @@
         <i class="left-menu-icon fas fa-hourglass-start"></i>
         <i class="left-menu-icon fas fa-shopping-cart"></i>
     </div>
-    <div class="container">
-        <div class="content-container">
-            <div class="featured-content"
-                style="background: linear-gradient(to bottom, rgba(0,0,0,0), #151515), url('img/f-1.jpg');">
-                <img class="featured-title" src="Exhuma.jpg" alt="">
-                <p class="featured-desc">NUMBER 1 PAGES REVIEW FLIM IN THE WORLD.</p>
-                <button class="featured-button">WATCH</button>
+ 
+<div class="container">
+    <div class="content-container">
+        <div class="featured-content"
+            style="background: linear-gradient(to bottom, rgba(0,0,0,0), #151515), url('img/f-1.jpg');">
+            <!-- Thay thế phần search-wrapper hiện tại bằng đoạn code sau -->
+            <div class="search-wrapper">
+                <h1 class="search-title">Welcome.</h1>
+                <h2 class="search-subtitle">Millions of movies, TV shows and people to discover. Explore now.</h2>
+                <div class="search-container-large">
+                    <form id="main-search-form" class="search-form-large">
+                        <input type="text" 
+                               id="mainSearchInput" 
+                               class="search-input-large" 
+                               placeholder="Search for a movie, tv show, person......">
+                        <button type="submit" id="mainSearchButton" class="search-button-large">
+                            Search
+                        </button>
+                    </form>
+                    <div id="mainSearchResults" class="search-results-large"></div>
+                </div>
             </div>
-            <div class="movie-list-container">
-                <h1 class="movie-list-title">POPULAR MOVIES</h1>
+        </div>
+        
+        <div class="movie-list-container">
+            <h1 class="movie-list-title">POPULAR MOVIES</h1>
+            
                 <div class="movie-list-wrapper">
                     <div class="movie-list" id="popularMovies">
                         <div class="loading">
@@ -213,4 +219,3 @@
 </body>
 </html>
 
-    

@@ -126,112 +126,166 @@ document.getElementById('searchInput')?.addEventListener('keyup', function (e) {
 });
 
 // ===== SEARCH FUNCTIONALITY =====
+// Khai báo biến cho thanh tìm kiếm nhỏ
 const searchInput = document.getElementById('searchInput');
 const searchButton = document.getElementById('searchButton');
 const searchResults = document.getElementById('searchResults');
 
-async function searchMovies(query) {
-  try {
-    const response = await fetch(`/api/movies/${encodeURIComponent(query)}`);
-    if (!response.ok) throw new Error("Lỗi tìm kiếm");
-    return await response.json();
-  } catch (error) {
-    console.error("Search error:", error);
-    return [];
-  }
-}
-
-function renderSearchResults(results) {
-  if (!searchResults) return;
-  
-  searchResults.innerHTML = '';
-  
-  if (results.length === 0) {
-    searchResults.innerHTML = '<div class="search-result-item">Không tìm thấy phim</div>';
-    searchResults.style.display = 'block';
-    return;
-  }
-
-  results.forEach(movie => {
-    const item = document.createElement('div');
-    item.className = 'search-result-item';
-    
-    // Thêm poster nếu có
-    if (movie.poster) {
-      const poster = document.createElement('img');
-      poster.src = movie.poster;
-      poster.className = 'search-result-poster';
-      poster.alt = movie.title;
-      item.appendChild(poster);
-    }
-    
-    const info = document.createElement('div');
-    info.className = 'search-result-info';
-    
-    const title = document.createElement('div');
-    title.className = 'search-result-title';
-    title.textContent = movie.title;
-    
-    const year = document.createElement('div');
-    year.className = 'search-result-year';
-    year.textContent = movie.year;
-    
-    info.appendChild(title);
-    info.appendChild(year);
-    item.appendChild(info);
-    
-    item.addEventListener('click', () => {
-      showMovieDetails(movie.id);
-      searchResults.style.display = 'none';
-    });
-    
-    searchResults.appendChild(item);
-  });
-
-  searchResults.style.display = 'block';
-}
-
-// Xử lý sự kiện tìm kiếm
+// Xử lý sự kiện cho thanh tìm kiếm nhỏ
 if (searchButton) {
-  searchButton.addEventListener('click', async () => {
-    if (!searchInput) return;
-    const query = searchInput.value.trim();
-    if (query.length < 2) return;
-    
-    const results = await searchMovies(query);
-    renderSearchResults(results);
-  });
+    searchButton.addEventListener('click', async (e) => {
+        e.preventDefault();
+        if (!searchInput) return;
+        
+        const query = searchInput.value.trim();
+        if (query.length < 2) return;
+        
+        const results = await searchMovies(query);
+        renderSearchResults(results, searchResults);
+    });
 }
 
 if (searchInput) {
-  searchInput.addEventListener('keyup', async (e) => {
-    if (e.key === 'Enter') {
-      const query = searchInput.value.trim();
-      if (query.length < 2) return;
-      
-      const results = await searchMovies(query);
-      renderSearchResults(results);
-    }
-  });
-
-  let searchTimeout;
-  searchInput.addEventListener('input', () => {
-    clearTimeout(searchTimeout);
-    searchTimeout = setTimeout(async () => {
-      const query = searchInput.value.trim();
-      if (query.length >= 2) {
-        const results = await searchMovies(query);
-        renderSearchResults(results);
-      }
-    }, 300);
-  });
+    searchInput.addEventListener('input', async (e) => {
+        const query = e.target.value.trim();
+        if (query.length >= 2) {
+            const results = await searchMovies(query);
+            renderSearchResults(results, searchResults);
+        } else {
+            searchResults.style.display = 'none';
+        }
+    });
 }
 
-// Đóng kết quả khi click bên ngoài
+// Xóa hàm renderSearchResults cũ và chỉ giữ một phiên bản
+function renderSearchResults(results, container) {
+    if (!container) return;
+    
+    container.innerHTML = '';
+    
+    if (results.length === 0) {
+        container.innerHTML = '<div class="search-result-item">Không tìm thấy phim</div>';
+        container.style.display = 'block';
+        return;
+    }
+
+    results.forEach(movie => {
+        const item = document.createElement('div');
+        item.className = 'search-result-item';
+        
+        // Thêm poster nếu có
+        if (movie.poster) {
+            const poster = document.createElement('img');
+            poster.src = movie.poster;
+            poster.className = 'search-result-poster';
+            poster.alt = movie.title;
+            item.appendChild(poster);
+        }
+        
+        const info = document.createElement('div');
+        info.className = 'search-result-info';
+        
+        const title = document.createElement('div');
+        title.className = 'search-result-title';
+        title.textContent = movie.title;
+        
+        const year = document.createElement('div');
+        year.className = 'search-result-year';
+        year.textContent = movie.year;
+        
+        info.appendChild(title);
+        info.appendChild(year);
+        item.appendChild(info);
+        
+        item.addEventListener('click', () => {
+            window.location.href = `/movie-detail.html?id=${movie.id}`;
+        });
+        
+        container.appendChild(item);
+    });
+
+    container.style.display = 'block';
+}
+const mainSearchInput = document.getElementById('mainSearchInput');
+const mainSearchButton = document.getElementById('mainSearchButton');
+const mainSearchResults = document.getElementById('mainSearchResults');
+const mainSearchForm = document.getElementById('main-search-form');
+
+// Thêm xử lý sự kiện input cho thanh tìm kiếm chính
+if (mainSearchInput) {
+    mainSearchInput.addEventListener('input', async (e) => {
+        const query = e.target.value.trim();
+        if (query.length >= 2) {
+            const results = await searchMovies(query);
+            renderSearchResults(results, mainSearchResults);
+        } else {
+            mainSearchResults.style.display = 'none';
+        }
+    });
+}
+
+// Định nghĩa lại hàm searchMovies
+async function searchMovies(query) {
+    try {
+        const response = await fetch(`/api/movies/search?query=${encodeURIComponent(query)}`);
+        if (!response.ok) throw new Error("Lỗi tìm kiếm");
+        const data = await response.json();
+        
+        return data.results.map(movie => ({
+            id: movie.id,
+            title: movie.title,
+            poster: movie.poster_path ? `https://image.tmdb.org/t/p/w92${movie.poster_path}` : null,
+            year: movie.release_date ? movie.release_date.substring(0, 4) : 'N/A',
+            overview: movie.overview
+        }));
+    } catch (error) {
+        console.error("Search error:", error);
+        return [];
+    }
+}
+
+// Cập nhật hàm renderSearchResults
+function renderSearchResults(results, container) {
+    if (!container) {
+        console.error('Container không tồn tại');
+        return;
+    }
+    
+    container.innerHTML = '';
+    container.style.display = 'block'; // Luôn hiển thị container
+    
+    if (!results || results.length === 0) {
+        container.innerHTML = '<div class="search-result-item">Không tìm thấy phim</div>';
+        return;
+    }
+
+    results.forEach(movie => {
+        const item = document.createElement('div');
+        item.className = 'search-result-item';
+        
+        const content = `
+            ${movie.poster ? `<img src="${movie.poster}" class="search-result-poster" alt="${movie.title}">` : ''}
+            <div class="search-result-info">
+                <div class="search-result-title">${movie.title}</div>
+                <div class="search-result-year">${movie.year}</div>
+            </div>
+        `;
+        
+        item.innerHTML = content;
+        
+        item.addEventListener('click', () => {
+            window.location.href = `/movie-detail.html?id=${movie.id}`;
+        });
+        
+        container.appendChild(item);
+    });
+}
+
+// Thêm xử lý đóng kết quả khi click ngoài
 document.addEventListener('click', (e) => {
-  if (searchResults && !e.target.closest('.search-container')) {
-    searchResults.style.display = 'none';
-  }
+    if (mainSearchResults && !e.target.closest('.search-container-large')) {
+        mainSearchResults.style.display = 'none';
+    }
 });
 
 function showMovieDetails(movieId) {
@@ -399,4 +453,84 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log(`Initializing movie list ${index + 1}`);
     initializeMovieListNavigation(list);
   });
+});
+
+// Xử lý tìm kiếm trên trang chủ
+document.addEventListener('DOMContentLoaded', function() {
+    const searchForm = document.getElementById('main-search-form');
+    const searchInput = document.getElementById('mainSearchInput');
+    const searchResults = document.getElementById('mainSearchResults');
+    
+    if (searchForm) {
+        searchForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const searchTerm = searchInput.value.trim();
+            
+            if (searchTerm.length > 0) {
+                // Hiển thị loading
+                searchResults.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i><p>Searching...</p></div>';
+                searchResults.classList.add('active');
+                
+                // Gọi API tìm kiếm
+                fetch(`/api/movies/search?query=${encodeURIComponent(searchTerm)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.results && data.results.length > 0) {
+                            displaySearchResults(data.results);
+                        } else {
+                            searchResults.innerHTML = '<div class="no-results">No results found</div>';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Search error:', error);
+                        searchResults.innerHTML = '<div class="error">An error occurred while searching</div>';
+                    });
+            }
+        });
+        
+        // Hiển thị kết quả tìm kiếm
+        function displaySearchResults(results) {
+            searchResults.innerHTML = '';
+            searchResults.classList.add('active');
+            
+            results.slice(0, 10).forEach(movie => {
+                const resultItem = document.createElement('div');
+                resultItem.classList.add('search-result-item');
+                
+                const posterPath = movie.poster_path 
+                    ? `https://image.tmdb.org/t/p/w92${movie.poster_path}` 
+                    : 'images/placeholder.png';
+                
+                resultItem.innerHTML = `
+                    <div class="search-result-poster">
+                        <img src="${posterPath}" alt="${movie.title}">
+                    </div>
+                    <div class="search-result-info">
+                        <h3>${movie.title}</h3>
+                        <p>${movie.release_date ? new Date(movie.release_date).getFullYear() : 'N/A'}</p>
+                    </div>
+                `;
+                
+                resultItem.addEventListener('click', () => {
+                    window.location.href = `/movie-detail.html?id=${movie.id}`;
+                });
+                
+                searchResults.appendChild(resultItem);
+            });
+        }
+        
+        // Đóng kết quả tìm kiếm khi click ra ngoài
+        document.addEventListener('click', function(e) {
+            if (!searchForm.contains(e.target) && !searchResults.contains(e.target)) {
+                searchResults.classList.remove('active');
+            }
+        });
+        
+        // Hiển thị kết quả khi focus vào input và đã có kết quả trước đó
+        searchInput.addEventListener('focus', function() {
+            if (searchResults.children.length > 0) {
+                searchResults.classList.add('active');
+            }
+        });
+    }
 });

@@ -20,7 +20,10 @@ db.query('SELECT 1')
   .catch(err => {
     console.error('Lỗi kết nối database:', err);
   });
+// Middleware và cấu hình khác...
 app.use(express.urlencoded({ extended: true }));
+
+// Thêm route cho API auth
 const authRoutes = require('./routes/auth');
 app.use('/api/auth', authRoutes);
 
@@ -80,42 +83,12 @@ app.get('/api/tmdb/*', async (req, res) => {
 });
 
 // Route API tìm kiếm phim
-app.get('/api/movies/:keyword', async (req, res) => {
-  try {
-    const keyword = req.params.keyword;
-    console.log(`Searching for: "${keyword}"`);
-    
-    const response = await axios.get(`${TMDB_BASE_URL}/search/movie`, {
-      params: { 
-        api_key: TMDB_API_KEY,
-        query: keyword,
-        language: 'vi-VN',
-        include_adult: false
-      },
-      headers: tmdbHeaders
-    });
-    
-    const results = response.data.results.map(movie => ({
-      id: movie.id,
-      title: movie.title,
-      year: movie.release_date ? movie.release_date.split('-')[0] : 'N/A',
-      poster: movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : null,
-      rating: movie.vote_average,
-      overview: movie.overview
-    }));
-    
-    console.log(`Found ${results.length} results for "${keyword}"`);
-    res.json(results);
-  } catch (err) {
-    console.error('API Error:', err.message);
-    res.status(500).json({ 
-      error: 'Failed to fetch movie data',
-      details: process.env.NODE_ENV === 'development' ? err.message : undefined
-    });
-  }
-});
+// Thêm dòng này sau phần khai báo authRoutes
+const movieRoutes = require('./routes/movies');
+app.use('/api/movies', movieRoutes);
 
-// Route API chi tiết phim
+// Xóa hoặc comment route này vì đã được xử lý trong routes/movies.js
+// app.get('/api/movies/:keyword', async (req, res) => { ... });
 app.get('/api/movie/details/:id', async (req, res) => {
   try {
     const id = req.params.id;
