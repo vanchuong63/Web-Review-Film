@@ -160,7 +160,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Add click event to view series details
             seriesCard.addEventListener('click', () => {
-                window.location.href = `/movie-detail.html?id=${id}&type=tv`;
+                window.location.href = `movie-detail.html?id=${id}&type=tv`;
             });
             
             seriesGrid.appendChild(seriesCard);
