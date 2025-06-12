@@ -30,12 +30,12 @@
     </style>
 </head>
 <body>
-    <div class="login-container">
-        <div class="login-box">
-            <div class="login-header">
-                <h1 class="logo">IMDb</h1>
-                <h2>Đăng ký tài khoản</h2>
-                <p>Tạo tài khoản để trải nghiệm đầy đủ tính năng</p>
+    <div class="login-container w-full max-w-md mx-auto px-4 sm:px-6 md:px-8">
+        <div class="login-box bg-secondary p-4 sm:p-6 md:p-8 rounded-lg shadow-lg">
+            <div class="login-header text-center mb-6">
+                <h1 class="logo text-primary text-3xl sm:text-4xl md:text-5xl">IMDb</h1>
+                <h2 class="text-light text-xl sm:text-2xl mt-2">Đăng ký tài khoản</h2>
+                <p class="text-gray-400 text-sm sm:text-base mt-1">Tạo tài khoản để trải nghiệm đầy đủ tính năng</p>
             </div>
             <div id="error-messages" class="error-container"></div>
             <form class="login-form" id="register-form">
@@ -66,11 +66,10 @@
                     Đăng ký
                 </button>
             </form>
-            <div class="login-footer">
-                <p>Đã có tài khoản? <a href="login.html">Đăng nhập ngay</a></p><a href="index.html" class="back-home">
-                    <i class="fas fa-arrow-left"></i>
-                    Quay lại trang chủ
-                </a>
+            <div class="login-footer mt-4 text-center">
+                <p class="text-light text-sm sm:text-base">
+                  Đã có tài khoản? <a href="login.html" class="text-primary hover:underline">Đăng nhập ngay</a>
+                </p>
             </div>
         </div>
     </div>

@@ -18,12 +18,14 @@
             <div class="account-info">
                 <!-- Thêm input file ẩn cho upload ảnh -->
                 <div class="profile-image">
-                    <img id="profileImage" src="AnyConv.com__c23cd18f-17b5-4077-a839-8449d2015ee4.jpg" alt="Profile Picture">
+                    <!-- icon placeholder nếu không có ảnh -->
+                    <i class="fas fa-user-circle fa-5x" style="color: #888;"></i>
                     <input type="file" id="imageUpload" accept="image/*" style="display: none">
-                    <button class="change-photo" onclick="document.getElementById('imageUpload').click()">
-                        <i class="fas fa-camera"></i>
+                    <button class="change-photo" onclick="imageUpload.click()">
+                      <i class="fas fa-camera"></i>
                     </button>
-                </div>
+                  </div>
+                  
                 
                 <!-- Cập nhật form để có thể chỉnh sửa -->
                 <form class="login-form" id="profileForm">

@@ -1,73 +1,56 @@
 require('dotenv').config();
-const express = require("express");
-const axios = require("axios");
-const cors = require("cors");
-const path = require("path");
-const db = require('./config/database'); // Move this import here
+const express = require('express');
+const axios = require('axios');
+const cors = require('cors');
+const path = require('path');
+const supabase = require('./lib/supabase');
 
-// Khởi tạo ứng dụng Express
+// Test Supabase connection
+(async () => {
+  const { data, error } = await supabase
+    .from('user')
+    .select('id')
+    .limit(1);
+  if (error) console.error('Supabase test error:', error);
+  else console.log('Supabase connected, sample row:', data);
+})();
+
 const app = express();
-
-// Cài đặt middleware
 app.use(cors());
 app.use(express.json());
-
-// Kiểm tra kết nối database (move this check after middleware setup)
-db.query('SELECT 1')
-  .then(() => {
-    console.log('Kết nối database thành công');
-  })
-  .catch(err => {
-    console.error('Lỗi kết nối database:', err);
-  });
-// Middleware và cấu hình khác...
 app.use(express.urlencoded({ extended: true }));
 
-// Thêm route cho API auth
+// Auth routes
 const authRoutes = require('./routes/auth');
 app.use('/api/auth', authRoutes);
 
-// Phục vụ các file tĩnh
-app.use(express.static(path.join(__dirname, 'public')));
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-app.use('/content', express.static(path.join(__dirname, 'user-content')));
+// Users endpoint
+app.get('/api/users', async (req, res) => {
+  const { data, error } = await supabase
+    .from('user')
+    .select('id, username, email, created_at');
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data);
+});
 
-// TMDB API Configuration
+// TMDB proxy configuration
 const TMDB_API_KEY = process.env.TMDB_API_KEY;
 const TMDB_ACCESS_TOKEN = process.env.TMDB_ACCESS_TOKEN;
 const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
-
-// API headers cho TMDB
 const tmdbHeaders = {
-  'Authorization': `Bearer ${TMDB_ACCESS_TOKEN}`,
+  Authorization: `Bearer ${TMDB_ACCESS_TOKEN}`,
   'Content-Type': 'application/json;charset=utf-8'
 };
 
-// Route API proxy cho TMDB
+// TMDB API proxy
 app.get('/api/tmdb/*', async (req, res) => {
   try {
-    // Lấy phần đường dẫn sau /api/tmdb/
-    const endpoint = req.url.split('/api/tmdb/')[1];
-    
-    // Log endpoint để debug
-    console.log('Endpoint:', endpoint);
-    
-    // Xây dựng URL cho TMDB API
-    let tmdbUrl = `${TMDB_BASE_URL}/${endpoint}`;
-    
-    // Thêm API key vào params
+    const endpoint = req.params[0];
     const params = new URLSearchParams(req.query);
     params.append('api_key', TMDB_API_KEY);
-    
-    const fullUrl = `${tmdbUrl}?${params.toString()}`;
+    const fullUrl = `${TMDB_BASE_URL}/${endpoint}?${params.toString()}`;
     console.log('Calling TMDB API:', fullUrl);
-    
-    // Gọi TMDB API
-    const response = await axios.get(fullUrl, {
-      headers: tmdbHeaders
-    });
-    
-    // Trả về dữ liệu cho client
+    const response = await axios.get(fullUrl, { headers: tmdbHeaders });
     res.json(response.data);
   } catch (err) {
     console.error('TMDB API Error:', err.message);
@@ -82,26 +65,15 @@ app.get('/api/tmdb/*', async (req, res) => {
   }
 });
 
-// Route API tìm kiếm phim
-// Thêm dòng này sau phần khai báo authRoutes
-const movieRoutes = require('./routes/movies');
-app.use('/api/movies', movieRoutes);
-
-// Xóa hoặc comment route này vì đã được xử lý trong routes/movies.js
-// app.get('/api/movies/:keyword', async (req, res) => { ... });
+// Movie details route
 app.get('/api/movie/details/:id', async (req, res) => {
   try {
     const id = req.params.id;
-    
     const response = await axios.get(`${TMDB_BASE_URL}/movie/${id}`, {
-      params: {
-        api_key: TMDB_API_KEY,
-        language: 'vi-VN',
-        append_to_response: 'credits,videos'
-      },
+      params: { api_key: TMDB_API_KEY, language: 'vi-VN', append_to_response: 'credits,videos' },
       headers: tmdbHeaders
     });
-    
+
     const movie = {
       id: response.data.id,
       title: response.data.title,
@@ -122,83 +94,56 @@ app.get('/api/movie/details/:id', async (req, res) => {
       })),
       videos: response.data.videos?.results
         .filter(video => video.site === 'YouTube')
-        .map(video => ({
-          key: video.key,
-          name: video.name,
-          type: video.type
-        }))
+        .map(video => ({ key: video.key, name: video.name, type: video.type }))
     };
-    
+
     res.json(movie);
   } catch (err) {
-    console.error('API Error:', err.message);
-    res.status(500).json({ 
-      error: 'Failed to fetch movie details',
-      details: process.env.NODE_ENV === 'development' ? err.message : undefined
-    });
+    console.error('Movie details error:', err.message);
+    res.status(500).json({ error: 'Failed to fetch movie details', details: process.env.NODE_ENV === 'development' ? err.message : undefined });
   }
 });
 
-// Route API đánh giá phim
+// Movie rating route
 app.get('/api/movie/rating/:id', async (req, res) => {
   try {
     const id = req.params.id;
-    
     const response = await axios.get(`https://imdb236.p.rapidapi.com/imdb/${id}/rating`, {
       headers: {
         'X-RapidAPI-Key': process.env.RAPIDAPI_KEY,
         'X-RapidAPI-Host': 'imdb236.p.rapidapi.com'
       }
     });
-    
     res.json(response.data || {});
   } catch (err) {
-    console.error('API Error:', err.message);
-    res.status(500).json({ 
-      error: 'Failed to fetch movie rating',
-      details: process.env.NODE_ENV === 'development' ? err.message : undefined
-    });
+    console.error('Movie rating error:', err.message);
+    res.status(500).json({ error: 'Failed to fetch movie rating', details: process.env.NODE_ENV === 'development' ? err.message : undefined });
   }
 });
 
-// API Test Route
+// API test route
 app.get('/api/test', async (req, res) => {
   try {
     const response = await axios.get('https://imdb236.p.rapidapi.com/search', {
-      params: { 
-        query: 'avatar',  // từ khóa cố định để test
-        type: 'movie'
-      },
+      params: { query: 'avatar', type: 'movie' },
       headers: {
         'X-RapidAPI-Key': process.env.RAPIDAPI_KEY,
         'X-RapidAPI-Host': 'imdb236.p.rapidapi.com'
       }
     });
-    
-    res.json({
-      results: response.data.results || [],
-      apiKey: process.env.RAPIDAPI_KEY ? process.env.RAPIDAPI_KEY.substring(0, 5) + '...' : 'missing',
-      apiHost: 'imdb236.p.rapidapi.com'
-    });
+
+    res.json({ results: response.data.results || [], apiHost: 'imdb236.p.rapidapi.com' });
   } catch (err) {
-    console.error('API Test Error:', err.message);
-    res.status(500).json({ 
-      error: 'API Test Failed',
-      message: err.message,
-      stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
-    });
+    console.error('API test error:', err.message);
+    res.status(500).json({ error: 'API Test Failed', message: err.message, stack: process.env.NODE_ENV === 'development' ? err.stack : undefined });
   }
 });
 
-// Route API lấy phim phổ biến
+// Popular movies route
 app.get('/api/movies/popular', async (req, res) => {
   try {
     const response = await axios.get(`${TMDB_BASE_URL}/movie/popular`, {
-      params: {
-        api_key: TMDB_API_KEY,
-        language: 'vi-VN',
-        page: req.query.page || 1
-      },
+      params: { api_key: TMDB_API_KEY, language: 'vi-VN', page: req.query.page || 1 },
       headers: tmdbHeaders
     });
 
@@ -211,52 +156,29 @@ app.get('/api/movies/popular', async (req, res) => {
       overview: movie.overview
     }));
 
-    res.json({
-      results,
-      page: response.data.page,
-      total_pages: response.data.total_pages
-    });
+    res.json({ results, page: response.data.page, total_pages: response.data.total_pages });
   } catch (err) {
-    console.error('API Error:', err.message);
-    res.status(500).json({
-      error: 'Failed to fetch popular movies',
-      details: process.env.NODE_ENV === 'development' ? err.message : undefined
-    });
+    console.error('Popular movies error:', err.message);
+    res.status(500).json({ error: 'Failed to fetch popular movies', details: process.env.NODE_ENV === 'development' ? err.message : undefined });
   }
 });
 
-// Cập nhật file .env nếu chưa có
-const fs = require('fs');
-const envFilePath = path.join(__dirname, '.env');
+// Additional movie routes
+const movieRoutes = require('./routes/movies');
+app.use('/api/movies', movieRoutes);
 
-if (!fs.existsSync(envFilePath) || !process.env.TMDB_API_KEY) {
-  console.log('Creating or updating .env file with TMDB API configuration template');
-  
-  const envTemplate = `# TMDB API Configuration
-TMDB_API_KEY=your_tmdb_api_key_here
-TMDB_ACCESS_TOKEN=your_tmdb_access_token_here
+// Serve static files
+app.use(express.static(path.join(__dirname, 'public')));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/content', express.static(path.join(__dirname, 'user-content')));
 
-# RapidAPI Configuration
-RAPIDAPI_KEY=your_rapidapi_key_here
-
-# Server Configuration
-PORT=3000
-NODE_ENV=development
-`;
-
-  // Ghi file .env mới hoặc cập nhật nếu đã tồn tại
-  fs.writeFileSync(envFilePath, envTemplate, { flag: 'w' });
-  console.log(`Please update your API keys in the .env file at ${envFilePath}`);
-}
-
-// Phục vụ file index.html cho tất cả các route khác
+// SPA fallback
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Khởi động server
+// Start server
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-  console.log(`API available at http://localhost:${PORT}/api/tmdb/*`);
+  console.log(`Server listening on port ${PORT}`);
 });

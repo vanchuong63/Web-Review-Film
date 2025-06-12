@@ -11,113 +11,122 @@
     <title>Movies - IMDb</title>
 </head>
 <body>
-    <div class="navbar">
-        <div class="navbar-container">
-            <div class="logo-container">
+    <div class="navbar w-full sticky top-0 z-50 bg-black">
+        <div class="navbar-container flex flex-wrap items-center justify-between px-4 sm:px-8 md:px-12 py-2 md:py-0 h-full text-white">
+            <div class="logo-container flex-1">
                 <a href="index.html" class="logo-link">
-                    <h1 class="logo">IMDb</h1>
+                    <h1 class="logo text-2xl sm:text-3xl text-primary">IMDb</h1>
                 </a>
             </div>
-            <div class="menu-container">
-                <ul class="menu-list">
-                    <li class="menu-list-item">Home</li>
-                    <li class="menu-list-item active">Movies</li>
-                    <li class="menu-list-item">Series</li>
-                    <li class="menu-list-item">Popular</li>
-                    <li class="menu-list-item">Trends</li>
-                    <li class="menu-list-item">
-                        <div class="search-container">
-                            <input type="text" id="searchInput" class="search-input" placeholder="Tìm kiếm phim...">
-                            <button id="searchButton" class="search-button">
+            
+            <!-- Hamburger menu cho mobile -->
+            <button class="md:hidden text-white">
+                <i class="fas fa-bars text-xl"></i>
+            </button>
+            
+            <div class="menu-container hidden md:block w-full md:w-auto flex-6">
+                <ul class="menu-list flex flex-col md:flex-row items-center">
+                    <li class="menu-list-item w-full md:w-auto py-2 md:py-0 mr-0 md:mr-4 lg:mr-8">Home</li>
+                    <li class="menu-list-item active w-full md:w-auto py-2 md:py-0 mr-0 md:mr-4 lg:mr-8">Movies</li>
+                    <li class="menu-list-item w-full md:w-auto py-2 md:py-0 mr-0 md:mr-4 lg:mr-8">Series</li>
+                    <li class="menu-list-item w-full md:w-auto py-2 md:py-0 mr-0 md:mr-4 lg:mr-8 hidden lg:block">Popular</li>
+                    <li class="menu-list-item w-full md:w-auto py-2 md:py-0 mr-0 md:mr-4 lg:mr-8 hidden lg:block">Trends</li>
+                    <li class="menu-list-item hidden md:block">
+                        <div class="search-container relative">
+                            <input type="text" id="searchInput" class="search-input w-full md:w-48 lg:w-64 p-2 rounded-full bg-gray-800 text-white" placeholder="Tìm kiếm phim...">
+                            <button id="searchButton" class="search-button absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400">
                               <i class="fas fa-search"></i>
                             </button>
                         </div>
-                        <div id="searchResults" class="search-results"></div>
+                        <div id="searchResults" class="search-results absolute w-full bg-gray-900 mt-1 rounded-lg shadow-lg z-50 hidden"></div>
                     </li>
                 </ul>
             </div>
-            <div class="profile-container">
-                <div class="profile-dropdown">
-                    <img class="profile-picture" src="AnyConv.com__c23cd18f-17b5-4077-a839-8449d2015ee4.jpg" alt="">
-                    <div class="profile-text-container">
+            
+            <div class="profile-container flex items-center justify-end">
+                <div class="profile-dropdown relative">
+                    <img class="profile-picture w-8 h-8 rounded-full" src="AnyConv.com__c23cd18f-17b5-4077-a839-8449d2015ee4.jpg" alt="">
+                    <div class="profile-text-container mx-2 hidden sm:block">
                         <span class="profile-text">Profile</span>
                         <i class="fas fa-caret-down"></i>
                     </div>
-                    <div class="dropdown-menu">
-                        <a href="login.html" class="dropdown-item"><i class="fas fa-sign-in-alt"></i> Đăng nhập</a>
-                        <a href="register.html" class="dropdown-item"><i class="fas fa-user-plus"></i> Đăng ký</a>
-                        <div class="dropdown-divider"></div>
-                        <a href="account.html" class="dropdown-item"><i class="fas fa-user"></i> Tài khoản</a>
-                        <a href="#" class="dropdown-item"><i class="fas fa-cog"></i> Cài đặt</a>
-                        <a href="#" class="dropdown-item"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a>
+                    <div class="dropdown-menu absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-50 hidden">
+                        <a href="login.html" class="dropdown-item p-3 hover:bg-gray-100 flex items-center"><i class="fas fa-sign-in-alt mr-2"></i> Đăng nhập</a>
+                        <a href="register.html" class="dropdown-item p-3 hover:bg-gray-100 flex items-center"><i class="fas fa-user-plus mr-2"></i> Đăng ký</a>
+                        <div class="dropdown-divider border-t border-gray-200"></div>
+                        <a href="account.html" class="dropdown-item p-3 hover:bg-gray-100 flex items-center"><i class="fas fa-user mr-2"></i> Tài khoản</a>
+                        <a href="#" class="dropdown-item p-3 hover:bg-gray-100 flex items-center"><i class="fas fa-cog mr-2"></i> Cài đặt</a>
+                        <a href="#" class="dropdown-item p-3 hover:bg-gray-100 flex items-center"><i class="fas fa-sign-out-alt mr-2"></i> Đăng xuất</a>
                     </div>
                 </div>
-                <div class="toggle">
-                    <i class="fas fa-moon toggle-icon"></i>
-                    <i class="fas fa-sun toggle-icon"></i>
-                    <div class="toggle-ball"></div>
+                <div class="toggle ml-4 relative cursor-pointer">
+                    <i class="fas fa-moon toggle-icon absolute text-white"></i>
+                    <i class="fas fa-sun toggle-icon absolute text-white"></i>
+                    <div class="toggle-ball absolute bg-white rounded-full"></div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="sidebar">
-        <i class="left-menu-icon fas fa-search"></i>
-        <i class="left-menu-icon fas fa-home"></i>
-        <i class="left-menu-icon fas fa-users"></i>
-        <i class="left-menu-icon fas fa-bookmark"></i>
-        <i class="left-menu-icon fas fa-tv"></i>
-        <i class="left-menu-icon fas fa-hourglass-start"></i>
-        <i class="left-menu-icon fas fa-shopping-cart"></i>
+    
+    <div class="sidebar fixed left-0 top-0 pt-16 w-12 h-screen bg-black flex flex-col items-center justify-start z-40 hidden sm:flex">
+        <i class="left-menu-icon fas fa-search text-white my-4 cursor-pointer"></i>
+        <i class="left-menu-icon fas fa-home text-white my-4 cursor-pointer"></i>
+        <i class="left-menu-icon fas fa-users text-white my-4 cursor-pointer"></i>
+        <i class="left-menu-icon fas fa-bookmark text-white my-4 cursor-pointer"></i>
+        <i class="left-menu-icon fas fa-tv text-white my-4 cursor-pointer"></i>
+        <i class="left-menu-icon fas fa-hourglass-start text-white my-4 cursor-pointer"></i>
+        <i class="left-menu-icon fas fa-shopping-cart text-white my-4 cursor-pointer"></i>
     </div>
-    <div class="container">
-        <div class="content-container">
-            <div class="movie-page-header">
-                <h1>Discover Movies</h1>
-                <div class="filter-container">
-                    <div class="filter-group">
-                        <label for="sortBy">Sort By:</label>
-                        <select id="sortBy" class="filter-select">
+    
+    <div class="container pl-0 sm:pl-12 w-full">
+        <div class="content-container px-4 sm:px-8 py-8">
+            <div class="movie-page-header mb-8">
+                <h1 class="text-2xl sm:text-3xl md:text-4xl text-white font-bold mb-6">Discover Movies</h1>
+                <div class="filter-container flex flex-col md:flex-row items-start md:items-center flex-wrap gap-4">
+                    <div class="filter-group w-full md:w-auto flex items-center">
+                        <label for="sortBy" class="text-white mr-2">Sort By:</label>
+                        <select id="sortBy" class="filter-select bg-gray-800 text-white p-2 rounded-lg w-full md:w-auto">
                             <option value="popularity.desc">Popularity</option>
                             <option value="vote_average.desc">Rating</option>
                             <option value="release_date.desc">Release Date</option>
                             <option value="revenue.desc">Box Office</option>
                         </select>
                     </div>
-                    <div class="filter-group">
-                        <label for="genre">Genre:</label>
-                        <select id="genre" class="filter-select">
+                    <div class="filter-group w-full md:w-auto flex items-center">
+                        <label for="genre" class="text-white mr-2">Genre:</label>
+                        <select id="genre" class="filter-select bg-gray-800 text-white p-2 rounded-lg w-full md:w-auto">
                             <option value="">All Genres</option>
                             <!-- Genres will be loaded dynamically -->
                         </select>
                     </div>
-                    <div class="filter-group">
-                        <label for="year">Year:</label>
-                        <select id="year" class="filter-select">
+                    <div class="filter-group w-full md:w-auto flex items-center">
+                        <label for="year" class="text-white mr-2">Year:</label>
+                        <select id="year" class="filter-select bg-gray-800 text-white p-2 rounded-lg w-full md:w-auto">
                             <option value="">All Years</option>
                             <!-- Years will be populated dynamically -->
                         </select>
                     </div>
-                    <button id="filterButton" class="filter-button">
-                        <i class="fas fa-filter"></i> Filter
+                    <button id="filterButton" class="filter-button bg-primary text-white px-4 py-2 rounded-lg flex items-center hover:bg-opacity-90 transition duration-300 w-full md:w-auto justify-center">
+                        <i class="fas fa-filter mr-2"></i> Filter
                     </button>
                 </div>
             </div>
             
-            <div class="movie-grid" id="movieGrid">
+            <div class="movie-grid grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6" id="movieGrid">
                 <!-- Movies will be loaded here dynamically -->
-                <div class="loading">
-                    <i class="fas fa-spinner fa-spin"></i>
-                    <p>Loading movies...</p>
+                <div class="loading flex flex-col items-center justify-center col-span-full py-12">
+                    <i class="fas fa-spinner fa-spin text-2xl text-primary mb-2"></i>
+                    <p class="text-white">Loading movies...</p>
                 </div>
             </div>
             
-            <div class="pagination">
-                <button id="prevPage" class="pagination-button" disabled>
-                    <i class="fas fa-chevron-left"></i> Previous
+            <div class="pagination flex justify-center items-center mt-8 space-x-4">
+                <button id="prevPage" class="pagination-button bg-gray-800 text-white px-4 py-2 rounded-lg flex items-center disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                    <i class="fas fa-chevron-left mr-2"></i> Previous
                 </button>
-                <span id="currentPage" class="current-page">Page 1</span>
-                <button id="nextPage" class="pagination-button">
-                    Next <i class="fas fa-chevron-right"></i>
+                <span id="currentPage" class="current-page text-white px-4 py-2 bg-gray-700 rounded-lg">Page 1</span>
+                <button id="nextPage" class="pagination-button bg-gray-800 text-white px-4 py-2 rounded-lg flex items-center">
+                    Next <i class="fas fa-chevron-right ml-2"></i>
                 </button>
             </div>
         </div>
